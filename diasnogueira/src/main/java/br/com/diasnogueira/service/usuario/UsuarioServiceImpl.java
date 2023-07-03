@@ -1,8 +1,9 @@
 package br.com.diasnogueira.service.usuario;
 
+
+import br.com.diasnogueira.config.security.Pass;
 import br.com.diasnogueira.entities.Usuario;
 import br.com.diasnogueira.repository.UsuarioRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +13,11 @@ import java.util.Optional;
 public class UsuarioServiceImpl implements IUsuarioService{
 
     final UsuarioRepository usuarioRepository;
-    final PasswordEncoder passwordEncoder;
+    final Pass pass;
 
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, Pass pass) {
         this.usuarioRepository = usuarioRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.pass = pass;
     }
 
     @Override
@@ -51,6 +52,6 @@ public class UsuarioServiceImpl implements IUsuarioService{
 
     @Override
     public boolean verifyPassword(String password, Usuario usuario){
-        return passwordEncoder.matches(password, usuario.getSenha());
+        return pass.matches(password, usuario.getSenha());
     }
 }

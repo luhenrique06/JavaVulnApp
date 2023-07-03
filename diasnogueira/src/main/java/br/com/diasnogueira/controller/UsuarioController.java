@@ -5,12 +5,17 @@ import br.com.diasnogueira.config.security.ErroDTO;
 import br.com.diasnogueira.config.security.TokenUtil;
 import br.com.diasnogueira.entities.Usuario;
 import br.com.diasnogueira.service.usuario.IUsuarioService;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import java.time.Duration;
 import java.util.Optional;
 
 @RestController
@@ -21,19 +26,29 @@ public class UsuarioController {
     public static final String USUARIONOTFOUND = "Usuário não encontrado!";
     final IUsuarioService usuarioService;
     final PasswordEncoder passwordEncoder;
+  
+
+
+
 
     public UsuarioController(IUsuarioService usuarioService, PasswordEncoder passwordEncoder) {
         this.usuarioService = usuarioService;
         this.passwordEncoder = passwordEncoder;
     }
 
+
+
+
+
     @PostMapping("/login")
     public ResponseEntity<AuthToken> realizarLogin(@RequestBody @Valid Usuario usuario){
         Optional<Usuario> u = usuarioService.findByLogin(usuario.getLogin());
+
         if(u.isPresent() && usuarioService.verifyPassword(usuario.getSenha(), u.get())){
             return ResponseEntity.ok(TokenUtil.encodeToken(usuario));
         }
-        return ResponseEntity.status(403).build();
+        
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @PostMapping()

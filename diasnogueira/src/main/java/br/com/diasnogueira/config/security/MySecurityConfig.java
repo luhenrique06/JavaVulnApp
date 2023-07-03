@@ -9,6 +9,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
+
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +22,9 @@ public class MySecurityConfig {
         http.csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers(HttpMethod.POST, "/usuario/**").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/usuario/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/usuario/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/usuario/").permitAll()
                 .requestMatchers(HttpMethod.GET, "/empresa/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/escritorio/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/processo/**").permitAll()
@@ -35,7 +41,8 @@ public class MySecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
+    public Pass passwordEncoder()  {
+        return new Pass();
     }
+
 }
