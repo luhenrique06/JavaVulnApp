@@ -52,7 +52,7 @@ public class TokenUtil {
             if (usuario.length() > 0
                     && emissor.equals(EMISSOR)
                     && validade.after(new Date(System.currentTimeMillis()))) {
-                return new UsernamePasswordAuthenticationToken("user", null, Collections.emptyList());
+                return new UsernamePasswordAuthenticationToken(usuario, null, Collections.emptyList());
             }
         }catch (Exception e){
             Logger.getLogger(TokenUtil.class.getName()).log(Level.SEVERE, "Erro ao decodificar token", e);
