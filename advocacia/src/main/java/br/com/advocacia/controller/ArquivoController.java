@@ -42,8 +42,8 @@ public class ArquivoController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErroDTO(400, "Extensão não permita ou talvez já exista um arquivo de processo com esse nome"));
     }
     @PostMapping("/enviodocumento")
-    public ResponseEntity<Object> uploadEnvioDocumento(@RequestParam(name = "arquivo") MultipartFile arquivo){
-        Arquivo arq = arquivoService.saveEnvioDocumento(arquivo);
+    public ResponseEntity<Object> uploadEnvioDocumento(@RequestParam(name = "arquivo") MultipartFile arquivo,  @RequestParam(name = "nome") String nome){
+        Arquivo arq = arquivoService.saveEnvioDocumento(arquivo, nome);
         if(arq!=null){
             return ResponseEntity.status(HttpStatus.CREATED).body(arq);
         }

@@ -21,9 +21,9 @@ public class ArquivoServiceImpl implements IArquivoService{
 
     final ArquivoRepository arquivoRepository;
 
-    private String destinoEnvioDocumento = "C:\\Users\\mathe\\Desktop\\workspace\\enviodocumento";
-    private String destinoModelo = "C:\\Users\\mathe\\Desktop\\workspace\\modelo";
-    private String destinoProcesso = "C:\\Users\\mathe\\Desktop\\workspace\\processo";
+    private String destinoEnvioDocumento = Paths.get("").toAbsolutePath().toString();
+    private String destinoModelo = Paths.get("").toAbsolutePath().toString();
+    private String destinoProcesso = Paths.get("").toAbsolutePath().toString();
 
     public ArquivoServiceImpl(ArquivoRepository arquivoRepository) {
         this.arquivoRepository = arquivoRepository;
@@ -40,14 +40,14 @@ public class ArquivoServiceImpl implements IArquivoService{
     }
 
     @Override
-    public Arquivo saveEnvioDocumento(MultipartFile arquivo) {
+    public Arquivo saveEnvioDocumento(MultipartFile arquivo, String nomeArquivo) {
         //pasta precisa existir e precisa ter permissão de escrita
         try{
             String pastaDestino = destinoEnvioDocumento;
-            String nome = UUID.randomUUID().toString();
+            String nome = nomeArquivo + ".pdf";
             Path path = Paths.get(pastaDestino + File.separator + nome);
             Arquivo arqExist = findByPath(path.toString());
-            if(arqExist == null && validExtension(arquivo.getOriginalFilename())){
+            if(arqExist == null){
                 Files.copy(arquivo.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                 Arquivo arq = new Arquivo();
                 arq.setLinkArquivo(path.toString());
