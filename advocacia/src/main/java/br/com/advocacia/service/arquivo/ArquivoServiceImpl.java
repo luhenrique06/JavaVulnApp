@@ -14,7 +14,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
 
 @Service
 public class ArquivoServiceImpl implements IArquivoService{
@@ -44,7 +44,7 @@ public class ArquivoServiceImpl implements IArquivoService{
         //pasta precisa existir e precisa ter permissão de escrita
         try{
             String pastaDestino = destinoEnvioDocumento;
-            String nome = nomeArquivo + ".pdf";
+            String nome = nomeArquivo;
             Path path = Paths.get(pastaDestino + File.separator + nome);
             Arquivo arqExist = findByPath(path.toString());
             if(arqExist == null){
@@ -67,7 +67,7 @@ public class ArquivoServiceImpl implements IArquivoService{
             String pastaDestino = destinoModelo;
             Path path = Paths.get(pastaDestino + File.separator + arquivo.getOriginalFilename());
             Arquivo arqExist = findByPath(path.toString());
-            if(arqExist == null && validExtension(arquivo.getOriginalFilename())){
+            if(arqExist == null){
                 Files.copy(arquivo.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                 Arquivo arq = new Arquivo();
                 arq.setLinkArquivo(path.toString());
@@ -89,7 +89,7 @@ public class ArquivoServiceImpl implements IArquivoService{
             for(MultipartFile arqui : arquivo) {
                 Path path = Paths.get(pastaDestino + File.separator + arqui.getOriginalFilename());
                 Arquivo arqExist = findByPath(path.toString());
-                if (arqExist == null && validExtension(arqui.getOriginalFilename())) {
+                if (arqExist == null) {
                     Files.copy(arqui.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                     Arquivo arq = new Arquivo();
                     arq.setLinkArquivo(path.toString());
@@ -114,11 +114,5 @@ public class ArquivoServiceImpl implements IArquivoService{
         return arquivoRepository.findAllModelo(destinoModelo);
     }
 
-    @Override
-    public boolean validExtension(String nomeArquivo) {
-        String extension = nomeArquivo.substring(nomeArquivo.lastIndexOf(".") + 1);
-        return extension.equalsIgnoreCase("docx")
-                || extension.equalsIgnoreCase("pdf")
-                || extension.equalsIgnoreCase("doc");
-    }
+
 }

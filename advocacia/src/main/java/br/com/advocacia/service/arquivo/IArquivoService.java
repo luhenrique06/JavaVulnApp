@@ -15,5 +15,5 @@ public interface IArquivoService {
     List<Arquivo> saveProcesso(List<MultipartFile> arquivo);
     void deleteById(Long id);
     List<Arquivo> findAllModelo();
-    boolean validExtension(String extension);
+    //boolean validExtension(String extension);
 }
