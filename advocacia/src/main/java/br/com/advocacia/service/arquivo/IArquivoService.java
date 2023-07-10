@@ -16,4 +16,5 @@ public interface IArquivoService {
     void deleteById(Long id);
     List<Arquivo> findAllModelo();
     //boolean validExtension(String extension);
+    String lerArquivo(String nome);
 }

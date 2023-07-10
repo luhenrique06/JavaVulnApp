@@ -73,4 +73,10 @@ public class ArquivoController {
         arquivoService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).body("Arquivo deletado com sucesso!");
     }
+
+    @GetMapping("/ler/{arquivo}")
+    public ResponseEntity<Object> lerArquivo(@PathVariable(value = "arquivo") String arquivo){
+       
+        return ResponseEntity.status(HttpStatus.OK).body(arquivoService.lerArquivo(arquivo));
+    }
 }

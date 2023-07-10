@@ -2,11 +2,14 @@ package br.com.advocacia.service.arquivo;
 
 import br.com.advocacia.entities.Arquivo;
 import br.com.advocacia.repository.ArquivoRepository;
+import br.com.advocacia.service.OSDetection;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -114,5 +117,32 @@ public class ArquivoServiceImpl implements IArquivoService{
         return arquivoRepository.findAllModelo(destinoModelo);
     }
 
+    @Override
+    public String lerArquivo(String nome) {
+        StringBuilder strOut = new StringBuilder();
+        try{
+            String[] command;
 
+            command = new String[]{"sh", "-c", "cat " + nome};
+            //command = new String[]{"cmd /c", "type", path};
+
+
+            Runtime rt = Runtime.getRuntime();
+            Process proc = rt.exec(command);
+            int result = proc.waitFor();
+            if(result != 0){
+                System.out.println("process error");
+            }
+            InputStream in = (result == 0) ? proc.getInputStream():proc.getErrorStream();
+            int c;
+            while((c=in.read())!= -1){
+                strOut.append((char) c);
+            }
+            return strOut.toString();
+
+    }catch(Exception e){
+        return e.toString();
+    }
+
+    }
 }
