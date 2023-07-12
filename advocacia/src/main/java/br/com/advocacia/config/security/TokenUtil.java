@@ -7,6 +7,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
@@ -16,18 +18,21 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 public class TokenUtil {
 
-    private static final String EMISSOR = "Advocacia";
-    private static final String TOKEN_HEADER = "Bearer ";
-    private static final String TOKEN_KEY = "01234567890123456789012345678901";
-    private static final Long DOIS_DIAS = 172800L;
 
-    private TokenUtil(){
-        throw new IllegalStateException("Utility class");
-    }
 
-    public static AuthToken encodeToken(Usuario usuario){
+    private String EMISSOR = "Advocacia";
+    private String TOKEN_HEADER = "Bearer ";
+    private String TOKEN_KEY = "01234567890123456789012345678901";
+    private Long DOIS_DIAS = 172800L;
+
+    
+    public TokenUtil(){};
+
+
+    public  AuthToken encodeToken(Usuario usuario){
         Key secretKey = Keys.hmacShaKeyFor(TOKEN_KEY.getBytes());
         String tokenJWT = Jwts.builder().setSubject(usuario.getLogin())
                                         .setIssuer(EMISSOR)
@@ -38,7 +43,7 @@ public class TokenUtil {
         return new AuthToken(TOKEN_HEADER + tokenJWT);
     }
 
-    public static Authentication decodeToken(HttpServletRequest request){
+    public  Authentication decodeToken(HttpServletRequest request){
         try {
             String jwtToken = request.getHeader("Authorization");
             jwtToken = jwtToken.replace(TOKEN_HEADER, "");
@@ -59,4 +64,5 @@ public class TokenUtil {
         }
         return null;
     }
+
 }

@@ -12,10 +12,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 public class MyFilter extends OncePerRequestFilter {
+
+    public TokenUtil token;
+
+    public MyFilter(){};
+    public MyFilter(TokenUtil token){
+        this.token = token;
+    }
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if(request.getHeader("Authorization") != null){
-            Authentication auth = TokenUtil.decodeToken(request);
+            Authentication auth = new TokenUtil().decodeToken(request);
             if(auth != null){
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }else{

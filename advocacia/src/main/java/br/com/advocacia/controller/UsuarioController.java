@@ -26,6 +26,7 @@ public class UsuarioController {
     public static final String USUARIONOTFOUND = "Usuário não encontrado!";
     final IUsuarioService usuarioService;
     final PasswordEncoder passwordEncoder;
+ 
   
 
 
@@ -34,6 +35,7 @@ public class UsuarioController {
     public UsuarioController(IUsuarioService usuarioService, PasswordEncoder passwordEncoder) {
         this.usuarioService = usuarioService;
         this.passwordEncoder = passwordEncoder;
+
     }
 
 
@@ -45,7 +47,7 @@ public class UsuarioController {
         Optional<Usuario> u = usuarioService.findByLogin(usuario.getLogin());
 
         if(u.isPresent() && usuarioService.verifyPassword(usuario.getSenha(), u.get())){
-            return ResponseEntity.ok(TokenUtil.encodeToken(usuario));
+            return ResponseEntity.ok(new TokenUtil().encodeToken(usuario));
         }
         
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
