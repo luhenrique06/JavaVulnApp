@@ -26,6 +26,7 @@ public class MySecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/usuario").permitAll()
                 .requestMatchers(HttpMethod.GET, "/empresa/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/escritorio/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/arquivo/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/processo/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/arquivo/modelo").permitAll()
                 .requestMatchers(HttpMethod.POST, "/arquivo/enviodocumento").permitAll()

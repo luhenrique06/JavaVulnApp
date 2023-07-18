@@ -7,6 +7,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
@@ -15,6 +17,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 public class TokenUtil {
 
@@ -27,6 +30,7 @@ public class TokenUtil {
 
     
     public TokenUtil(){};
+
 
 
     public  String encodeToken(Usuario usuario){
@@ -61,4 +65,5 @@ public class TokenUtil {
         }
         return null;
     }
+
 }

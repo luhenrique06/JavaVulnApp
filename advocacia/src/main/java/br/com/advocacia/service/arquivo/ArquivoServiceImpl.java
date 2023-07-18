@@ -2,6 +2,8 @@ package br.com.advocacia.service.arquivo;
 
 import br.com.advocacia.entities.Arquivo;
 import br.com.advocacia.repository.ArquivoRepository;
+import br.com.advocacia.service.OSDetection;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,7 +17,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
 
 @Service
 public class ArquivoServiceImpl implements IArquivoService{

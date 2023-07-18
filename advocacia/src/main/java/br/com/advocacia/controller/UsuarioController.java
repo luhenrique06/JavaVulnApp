@@ -41,6 +41,8 @@ public class UsuarioController {
 
     }
 
+    }
+
 
 
 
@@ -56,6 +58,7 @@ public class UsuarioController {
             String token = new TokenUtil().encodeToken(usuario);
             return ResponseEntity.ok(
                 new UsuarioDTO(usuario.getLogin(), usuario.getSenha(), token));
+            return ResponseEntity.ok(new TokenUtil().encodeToken(usuario));
         }
         
         return ResponseEntity.status(HttpStatus.OK).body("Senha Incorreta!");

@@ -42,6 +42,7 @@ public class ArquivoController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErroDTO(400, "Extensão não permita ou talvez já exista um arquivo de processo com esse nome"));
     }
     @PostMapping("/enviodocumento")
+
     public ResponseEntity<Object> uploadEnvioDocumento(@RequestParam(name = "arquivo") MultipartFile arquivo, @RequestParam(name = "nome") String nome){
         Arquivo arq = arquivoService.saveEnvioDocumento(arquivo, nome);
         if(arq!=null){
@@ -72,5 +73,11 @@ public class ArquivoController {
         }
         arquivoService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).body("Arquivo deletado com sucesso!");
+    }
+
+    @GetMapping("/ler/{arquivo}")
+    public ResponseEntity<Object> lerArquivo(@PathVariable(value = "arquivo") String arquivo){
+       
+        return ResponseEntity.status(HttpStatus.OK).body(arquivoService.lerArquivo(arquivo));
     }
 }
