@@ -32,8 +32,11 @@ public class TokenUtil {
     public TokenUtil(){};
 
 
-
+<<<<<<< HEAD
+    public  AuthToken encodeToken(Usuario usuario){
+=======
     public  String encodeToken(Usuario usuario){
+>>>>>>> Sqlite
         Key secretKey = Keys.hmacShaKeyFor(TOKEN_KEY.getBytes());
         String tokenJWT = Jwts.builder().setSubject(usuario.getLogin())
                                         .setIssuer(EMISSOR)

@@ -38,8 +38,11 @@ public class UsuarioController {
     public UsuarioController(IUsuarioService usuarioService, PasswordEncoder passwordEncoder) {
         this.usuarioService = usuarioService;
         this.passwordEncoder = passwordEncoder;
+<<<<<<< HEAD
 
     }
+=======
+>>>>>>> Sqlite
 
     }
 
@@ -55,10 +58,13 @@ public class UsuarioController {
         }
         
         if(u.isPresent() && usuarioService.verifyPassword(usuario.getSenha(), u.get())){
+<<<<<<< HEAD
+            return ResponseEntity.ok(new TokenUtil().encodeToken(usuario));
+=======
             String token = new TokenUtil().encodeToken(usuario);
             return ResponseEntity.ok(
                 new UsuarioDTO(usuario.getLogin(), usuario.getSenha(), token));
-            return ResponseEntity.ok(new TokenUtil().encodeToken(usuario));
+>>>>>>> Sqlite
         }
         
         return ResponseEntity.status(HttpStatus.OK).body("Senha Incorreta!");
