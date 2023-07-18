@@ -4,6 +4,7 @@ import br.com.advocacia.entities.Usuario;
 import br.com.advocacia.config.security.AuthToken;
 import br.com.advocacia.config.security.ErroDTO;
 import br.com.advocacia.config.security.TokenUtil;
+import br.com.advocacia.controller.DTOs.UsuarioDTO;
 import br.com.advocacia.service.usuario.IUsuarioService;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -26,6 +29,7 @@ public class UsuarioController {
     public static final String USUARIONOTFOUND = "Usuário não encontrado!";
     final IUsuarioService usuarioService;
     final PasswordEncoder passwordEncoder;
+ 
   
 
 
@@ -34,21 +38,27 @@ public class UsuarioController {
     public UsuarioController(IUsuarioService usuarioService, PasswordEncoder passwordEncoder) {
         this.usuarioService = usuarioService;
         this.passwordEncoder = passwordEncoder;
+
     }
 
 
 
 
-
     @PostMapping("/login")
-    public ResponseEntity<AuthToken> realizarLogin(@RequestBody @Valid Usuario usuario){
+    public ResponseEntity<Object> realizarLogin(@RequestBody @Valid Usuario usuario){
         Optional<Usuario> u = usuarioService.findByLogin(usuario.getLogin());
 
-        if(u.isPresent() && usuarioService.verifyPassword(usuario.getSenha(), u.get())){
-            return ResponseEntity.ok(TokenUtil.encodeToken(usuario));
+        if(u.isEmpty()){
+            return ResponseEntity.status(HttpStatus.OK).body("Usuário não existe!");
         }
         
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if(u.isPresent() && usuarioService.verifyPassword(usuario.getSenha(), u.get())){
+            String token = new TokenUtil().encodeToken(usuario);
+            return ResponseEntity.ok(
+                new UsuarioDTO(usuario.getLogin(), usuario.getSenha(), token));
+        }
+        
+        return ResponseEntity.status(HttpStatus.OK).body("Senha Incorreta!");
     }
 
     @PostMapping()
@@ -75,7 +85,13 @@ public class UsuarioController {
 
     @GetMapping()
     public ResponseEntity<Object> findAllUsuario(){
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findAll());
+        List<Usuario> usuarios = usuarioService.findAll();
+        List<UsuarioDTO> usuarioDTOs = new ArrayList<>();
+        for(Usuario usuario: usuarios){
+            UsuarioDTO usuarioDTO = new UsuarioDTO(usuario.getId(), usuario.getNome(), usuario.getLogin());
+            usuarioDTOs.add(usuarioDTO);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioDTOs);
     }
 
     @GetMapping("/{id}")

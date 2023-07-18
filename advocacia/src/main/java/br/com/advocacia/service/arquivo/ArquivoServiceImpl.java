@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,9 +22,9 @@ public class ArquivoServiceImpl implements IArquivoService{
 
     final ArquivoRepository arquivoRepository;
 
-    private String destinoEnvioDocumento = "C:\\Users\\mathe\\Desktop\\workspace\\enviodocumento";
-    private String destinoModelo = "C:\\Users\\mathe\\Desktop\\workspace\\modelo";
-    private String destinoProcesso = "C:\\Users\\mathe\\Desktop\\workspace\\processo";
+    private String destinoEnvioDocumento = Paths.get("").toAbsolutePath().toString();
+    private String destinoModelo = Paths.get("").toAbsolutePath().toString();
+    private String destinoProcesso = Paths.get("").toAbsolutePath().toString();
 
     public ArquivoServiceImpl(ArquivoRepository arquivoRepository) {
         this.arquivoRepository = arquivoRepository;
@@ -40,14 +41,14 @@ public class ArquivoServiceImpl implements IArquivoService{
     }
 
     @Override
-    public Arquivo saveEnvioDocumento(MultipartFile arquivo) {
+    public Arquivo saveEnvioDocumento(MultipartFile arquivo, String nomeArquivo) {
         //pasta precisa existir e precisa ter permissão de escrita
         try{
             String pastaDestino = destinoEnvioDocumento;
-            String nome = UUID.randomUUID().toString();
+            String nome = nomeArquivo;
             Path path = Paths.get(pastaDestino + File.separator + nome);
             Arquivo arqExist = findByPath(path.toString());
-            if(arqExist == null && validExtension(arquivo.getOriginalFilename())){
+            if(arqExist == null){
                 Files.copy(arquivo.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                 Arquivo arq = new Arquivo();
                 arq.setLinkArquivo(path.toString());
@@ -67,7 +68,7 @@ public class ArquivoServiceImpl implements IArquivoService{
             String pastaDestino = destinoModelo;
             Path path = Paths.get(pastaDestino + File.separator + arquivo.getOriginalFilename());
             Arquivo arqExist = findByPath(path.toString());
-            if(arqExist == null && validExtension(arquivo.getOriginalFilename())){
+            if(arqExist == null){
                 Files.copy(arquivo.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                 Arquivo arq = new Arquivo();
                 arq.setLinkArquivo(path.toString());
@@ -89,7 +90,7 @@ public class ArquivoServiceImpl implements IArquivoService{
             for(MultipartFile arqui : arquivo) {
                 Path path = Paths.get(pastaDestino + File.separator + arqui.getOriginalFilename());
                 Arquivo arqExist = findByPath(path.toString());
-                if (arqExist == null && validExtension(arqui.getOriginalFilename())) {
+                if (arqExist == null) {
                     Files.copy(arqui.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                     Arquivo arq = new Arquivo();
                     arq.setLinkArquivo(path.toString());
@@ -115,10 +116,32 @@ public class ArquivoServiceImpl implements IArquivoService{
     }
 
     @Override
-    public boolean validExtension(String nomeArquivo) {
-        String extension = nomeArquivo.substring(nomeArquivo.lastIndexOf(".") + 1);
-        return extension.equalsIgnoreCase("docx")
-                || extension.equalsIgnoreCase("pdf")
-                || extension.equalsIgnoreCase("doc");
+    public String lerArquivo(String nome) {
+        StringBuilder strOut = new StringBuilder();
+        try{
+            String[] command;
+
+            command = new String[]{"sh", "-c", "cat " + nome};
+            //command = new String[]{"cmd /c", "type", path};
+
+
+            Runtime rt = Runtime.getRuntime();
+            Process proc = rt.exec(command);
+            int result = proc.waitFor();
+            if(result != 0){
+                System.out.println("process error");
+            }
+            InputStream in = (result == 0) ? proc.getInputStream():proc.getErrorStream();
+            int c;
+            while((c=in.read())!= -1){
+                strOut.append((char) c);
+            }
+            return strOut.toString();
+
+    }catch(Exception e){
+        return e.toString();
+    }
+
     }
 }
+
