@@ -18,3 +18,4 @@ public interface IArquivoService {
     //boolean validExtension(String extension);
     String lerArquivo(String nome);
 }
+

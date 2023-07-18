@@ -32,7 +32,8 @@ public class TokenUtil {
     public TokenUtil(){};
 
 
-    public  AuthToken encodeToken(Usuario usuario){
+
+    public  String encodeToken(Usuario usuario){
         Key secretKey = Keys.hmacShaKeyFor(TOKEN_KEY.getBytes());
         String tokenJWT = Jwts.builder().setSubject(usuario.getLogin())
                                         .setIssuer(EMISSOR)
@@ -40,7 +41,7 @@ public class TokenUtil {
                                         .signWith(secretKey, SignatureAlgorithm.HS256)
                                         .compact();
 
-        return new AuthToken(TOKEN_HEADER + tokenJWT);
+        return TOKEN_HEADER + tokenJWT;
     }
 
     public  Authentication decodeToken(HttpServletRequest request){
