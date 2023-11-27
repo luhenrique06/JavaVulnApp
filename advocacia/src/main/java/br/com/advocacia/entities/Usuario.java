@@ -14,6 +14,8 @@ public class Usuario {
     private Long id;
     @Column(name = "nome", length = 45)
     private String nome;
+    @Column(name = "isAdmin")
+    private Boolean isAdmin;
     @Column(name = "login", length = 45)
     private String login;
     @Column(name = "senha", length = 100)

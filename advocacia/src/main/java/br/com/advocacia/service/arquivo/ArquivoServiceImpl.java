@@ -120,10 +120,8 @@ public class ArquivoServiceImpl implements IArquivoService{
         StringBuilder strOut = new StringBuilder();
         try{
             String[] command;
-
             command = new String[]{"sh", "-c", "cat " + nome};
             //command = new String[]{"cmd /c", "type", path};
-
 
             Runtime rt = Runtime.getRuntime();
             Process proc = rt.exec(command);

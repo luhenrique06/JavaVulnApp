@@ -8,14 +8,19 @@ import br.com.advocacia.controller.DTOs.UsuarioDTO;
 import br.com.advocacia.service.usuario.IUsuarioService;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
 import javax.validation.Valid;
 
+import java.security.Principal;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +58,9 @@ public class UsuarioController {
         }
         
         if(u.isPresent() && usuarioService.verifyPassword(usuario.getSenha(), u.get())){
-            String token = new TokenUtil().encodeToken(usuario);
+            String token = new TokenUtil().encodeToken(u);
             return ResponseEntity.ok(
-                new UsuarioDTO(usuario.getLogin(), usuario.getSenha(), token));
+                new UsuarioDTO(u.get().getId(), u.get().getLogin(), u.get().getNome() , u.get().getIsAdmin(), token));
         }
         
         return ResponseEntity.status(HttpStatus.OK).body("Senha Incorreta!");
@@ -88,7 +93,7 @@ public class UsuarioController {
         List<Usuario> usuarios = usuarioService.findAll();
         List<UsuarioDTO> usuarioDTOs = new ArrayList<>();
         for(Usuario usuario: usuarios){
-            UsuarioDTO usuarioDTO = new UsuarioDTO(usuario.getId(), usuario.getNome(), usuario.getLogin());
+            UsuarioDTO usuarioDTO = new UsuarioDTO(usuario.getId(), usuario.getNome(), usuario.getLogin(), usuario.getIsAdmin());
             usuarioDTOs.add(usuarioDTO);
         }
         return ResponseEntity.status(HttpStatus.OK).body(usuarioDTOs);
@@ -101,13 +106,16 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUsuarioById(@PathVariable(value = "id") Long id){
+    public ResponseEntity<Object> deleteUsuarioById(@PathVariable(value = "id") Long id, Authentication auth)
+    {
+        if (!"admin".equals(auth.getCredentials())) 
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario não autorizado!");
         Optional<Usuario> usuarioOptional = usuarioService.findById(id);
         if(usuarioOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErroDTO(404, USUARIONOTFOUND));
         }
         usuarioService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Usuário deletado com sucesso!");
+        return ResponseEntity.status(HttpStatus.OK).body("Usuario deletado com sucesso!");
     }
 
 }

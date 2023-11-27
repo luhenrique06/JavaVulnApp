@@ -1,20 +1,24 @@
 package br.com.advocacia.config.security;
 
+import java.security.Key;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+
 import br.com.advocacia.entities.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-
-import java.security.Key;
-import java.util.Collections;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class TokenUtil {
 
@@ -29,9 +33,11 @@ public class TokenUtil {
     public TokenUtil(){};
 
 
-    public  String encodeToken(Usuario usuario){
+    public  String encodeToken(Optional<Usuario>  usuario){
         Key secretKey = Keys.hmacShaKeyFor(TOKEN_KEY.getBytes());
-        String tokenJWT = Jwts.builder().setSubject(usuario.getLogin())
+        String role = usuario.get().getIsAdmin() ? "admin" : "user";
+        String tokenJWT = Jwts.builder().setSubject(usuario.get().getLogin())
+                                        .claim("role", role )
                                         .setIssuer(EMISSOR)
                                         .setExpiration(new Date(System.currentTimeMillis() + DOIS_DIAS))
                                         .signWith(secretKey, SignatureAlgorithm.HS256)
@@ -44,21 +50,30 @@ public class TokenUtil {
         try {
             String jwtToken = request.getHeader("Authorization");
             jwtToken = jwtToken.replace(TOKEN_HEADER, "");
+            Key secretKey = Keys.hmacShaKeyFor(TOKEN_KEY.getBytes());
 
-            Jws<Claims> jwsClaims = Jwts.parserBuilder().setSigningKey(TOKEN_KEY.getBytes()).build().parseClaimsJws(jwtToken);
+            //Jws<Claims> jwt = Jwts.parserBuilder().setSigningKey(TOKEN_KEY.getBytes()).build().parseClaimsJws(jwtToken);
+            Jwt jwt = Jwts.parser().setSigningKey(secretKey).parse(jwtToken);
 
-            String usuario = jwsClaims.getBody().getSubject();
-            String emissor = jwsClaims.getBody().getIssuer();
-            Date validade = jwsClaims.getBody().getExpiration();
+            String body = jwt.getBody().toString();
+  
 
-            if (usuario.length() > 0
-                    && emissor.equals(EMISSOR)
-                    && validade.after(new Date(System.currentTimeMillis()))) {
-                return new UsernamePasswordAuthenticationToken(usuario, null, Collections.emptyList());
-            }
+            String subject = extractValue(body, "sub=([\\w|-]+)");
+            String role = extractValue(body, "role=([\\w|-]+)");
+
+            
+            return new UsernamePasswordAuthenticationToken(subject, role, Collections.emptyList());
+            
         }catch (Exception e){
             Logger.getLogger(TokenUtil.class.getName()).log(Level.SEVERE, "Erro ao decodificar token", e);
         }
         return null;
+    }
+
+    private static String extractValue(String input, String regex) {
+        Pattern pattern = Pattern.compile(regex);
+        java.util.regex.Matcher  matcher = pattern.matcher(input);
+
+        return matcher.find() ? matcher.group(1) : null;
     }
 }

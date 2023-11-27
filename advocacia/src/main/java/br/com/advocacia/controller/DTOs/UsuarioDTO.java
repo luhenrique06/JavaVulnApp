@@ -7,26 +7,34 @@ public class UsuarioDTO {
     private Long id;
     private String nome;
     private String login;
+    private Boolean isAdmin;
     private String senha;
     private String token;
 
 
-    public UsuarioDTO(Long id, String nome, String login) {
+    public UsuarioDTO(Long id, String nome, String login, Boolean isAdmin, String token) {
         this.id = id;
         this.nome = nome;
         this.login = login;
+        this.isAdmin = isAdmin;
+        this.senha = "";
+        this.token = token;
+
+    }
+
+    public UsuarioDTO(Long id, String nome, String login, Boolean isAdmin) {
+        this.id = id;
+        this.nome = nome;
+        this.login = login;
+        this.isAdmin = isAdmin;
         this.senha = "";
         this.token = "";
 
     }
 
 
-    public UsuarioDTO(String login, String senha, String token) {
-        this.login = login;
-        this.senha = senha;
-        this.token = token;
 
-    }
+
 
     // getters e setters (opcional)
     public Long getId() {
@@ -54,6 +62,14 @@ public class UsuarioDTO {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public Boolean getisAdmin() {
+        return isAdmin;
+    }
+
+    public void setisAdmin(Boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 
     public String getLogin() {
