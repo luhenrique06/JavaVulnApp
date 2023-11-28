@@ -45,10 +45,12 @@ public class ArquivoServiceImpl implements IArquivoService{
         //pasta precisa existir e precisa ter permissão de escrita
         try{
             String pastaDestino = destinoEnvioDocumento;
-            String nome = nomeArquivo;
+            //correção aqui para nao ter o path transversal
+            String nome = arquivo.getOriginalFilename();
             Path path = Paths.get(pastaDestino + File.separator + nome);
             Arquivo arqExist = findByPath(path.toString());
-            if(arqExist == null){
+            //correção da extensão 
+            if(arqExist == null && validExtension(nome)){
                 Files.copy(arquivo.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                 Arquivo arq = new Arquivo();
                 arq.setLinkArquivo(path.toString());
@@ -115,10 +117,24 @@ public class ArquivoServiceImpl implements IArquivoService{
         return arquivoRepository.findAllModelo(destinoModelo);
     }
 
+
+    @Override
+    public boolean validExtension(String nomeArquivo) {
+        String extension = nomeArquivo.substring(nomeArquivo.lastIndexOf(".") + 1);
+        return extension.equalsIgnoreCase("docx")
+                || extension.equalsIgnoreCase("pdf")
+                || extension.equalsIgnoreCase("txt");
+    }
+
     @Override
     public String lerArquivo(String nome) {
         StringBuilder strOut = new StringBuilder();
         try{
+            //CORREÇÃO COMMAND INJECTION
+            if (!nome.matches("[a-zA-Z0-9._]+")) {
+                throw new IllegalArgumentException("Nome de arquivo inválido");
+            }
+
             String[] command;
             command = new String[]{"sh", "-c", "cat " + nome};
             //command = new String[]{"cmd /c", "type", path};

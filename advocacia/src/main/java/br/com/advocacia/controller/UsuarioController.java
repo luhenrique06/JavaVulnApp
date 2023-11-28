@@ -99,10 +99,15 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioDTOs);
     }
 
+    ///////CORREÇÃO DO IDOR AQUI
+    ///////////COLOCA O PRINCIPAL, FAZ O IF E AJUSTA OS RETORNOS
     @GetMapping("/{id}")
-    public ResponseEntity<Object> findUsuarioById(@PathVariable(value = "id") Long id){
-        Optional<Usuario> usuarioOptional = usuarioService.findById(id);
-        return usuarioOptional.<ResponseEntity<Object>>map(usuario -> ResponseEntity.status(HttpStatus.OK).body(usuario)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErroDTO(404, USUARIONOTFOUND)));
+    public ResponseEntity<Object> findUsuarioById(@PathVariable(value = "id") Long id, Authentication principal){
+        String logado = principal.getPrincipal().toString();
+        Optional<Usuario> usuarioOptional = usuarioService.findByLogin(logado);
+        if(usuarioOptional.get().getId().equals(id))
+            return ResponseEntity.status(HttpStatus.OK).body(usuarioOptional.get());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autorizado!");
     }
 
     @DeleteMapping("/{id}")
@@ -114,7 +119,7 @@ public class UsuarioController {
         if(usuarioOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErroDTO(404, USUARIONOTFOUND));
         }
-        usuarioService.deleteById(id);
+        //usuarioService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).body("Usuario deletado com sucesso!");
     }
 

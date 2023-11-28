@@ -33,10 +33,10 @@ public class MySecurityConfig {
 
         return http.build();
     }
-
+    //CORREÇÃO AQUI, NÃO ESQUECER DE COMENTAR A CLASS PASS E MUDAR NO USUARIOSERVICE
     @Bean
-    public Pass passwordEncoder()  {
-        return new Pass();
+    public PasswordEncoder passwordEncoder()  {
+        return new BCryptPasswordEncoder();
     }
 
 }
