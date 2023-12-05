@@ -52,7 +52,6 @@ public class TokenUtil {
             jwtToken = jwtToken.replace(TOKEN_HEADER, "");
             Key secretKey = Keys.hmacShaKeyFor(TOKEN_KEY.getBytes());
 
-            //Jws<Claims> jwt = Jwts.parserBuilder().setSigningKey(TOKEN_KEY.getBytes()).build().parseClaimsJws(jwtToken);
             Jwt jwt = Jwts.parser().setSigningKey(secretKey).parse(jwtToken);
 
             String body = jwt.getBody().toString();

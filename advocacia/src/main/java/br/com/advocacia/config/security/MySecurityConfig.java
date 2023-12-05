@@ -22,6 +22,7 @@ public class MySecurityConfig {
         http.csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers(HttpMethod.POST, "/usuario/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/usuario").permitAll()
                 .requestMatchers(HttpMethod.GET, "/processo/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/arquivo/enviodocumento").permitAll()
                 .requestMatchers(HttpMethod.POST, "/enviodocumento").permitAll()
