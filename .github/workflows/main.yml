@@ -10,6 +10,7 @@ jobs:
      env:
        CONVISO_API_KEY: ${{secrets.CONVISO_API_KEY}}
        CONVISO_COMPANY_ID: 3
+       CONVISO_API_URL: 'https://academy.convisoappsec.com/'
    steps:
    - uses: actions/checkout@v4
    - name: Run AST
